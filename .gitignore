@@ -1,0 +1,34 @@
+
+# Bochs specific files
+.bochsrc
+.bochsrc_gdb
+.gdbcmd
+# Bochs output
+*.txt
+
+# tars
+*.tar.gz
+*.tgz
+*.gz
+
+# editor/lang specific
+.code/
+.idea/
+.clangd
+*.toml
+*.json
+
+# Binaries
+*.o 
+*.out
+zeos.bin
+build
+bootsect
+system
+user
+
+# Preprocessed Assembly
+*.s
+
+# other
+.cache
