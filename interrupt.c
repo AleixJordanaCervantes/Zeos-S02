@@ -39,15 +39,24 @@ void or_page_fault_handler();
 
 // Routine for Page Fault Error (idt[14])
 void or_page_fault_routine(int errno, int eip) {
-  printk("\nPage Fault Error (");
-  char *str = "";
+  char str[11]; // this variable allocates 11 chars to the stack.
+                // % eip (32 bit positive ) can have 10 digits in base 10 + 1
+                // for \0.
+
+  printk(")\nPage Fault Error (");
+
   itoa(errno, str);
   printk(str);
+
   printk(") at %eip = ");
-  char *eipstr = "";
-  itoa(eip, eipstr);
-  printk(eipstr);
-  printc('\n');
+
+  itoa(eip, str);
+  printk(str);
+
+  printk(")\n");
+
+  while (1)
+    ;
 }
 
 void setInterruptHandler(int vector, void (*handler)(),
