@@ -1,9 +1,5 @@
 #include <asm.h>
 
-#define EOI \
-	movb $0x20, %al ; \
-	outb %al, $0x20 ;
-
 // Returns EFLAGS
 ENTRY(get_eflags)
     pushf
@@ -100,7 +96,7 @@ ENTRY(return_gate)
 ENTRY(enable_int)
     pushl %ebp
     movl %esp, %ebp
-    movb $0xff, %al /* 0xFF = 11111111 -> all bits disabled */
+    movb $0xfd, %al /* 0xFF = 11111111 -> all bits disabled */
     outb %al, $0x21
     call delay
     sti

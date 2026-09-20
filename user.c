@@ -9,7 +9,8 @@ int __attribute__((__section__(".text.main"))) main(void) {
    * privileged one, and so it will raise an exception */
   /* __asm__ __volatile__ ("mov %0, %%cr3"::"r" (0) ); */
 
-  *((int *)0x00) = 0;
+  // Uncomment the following line to cause a Page Fault Error with errno 6
+  // *((int *)0x00) = 0;
   while (1) {
   }
 }

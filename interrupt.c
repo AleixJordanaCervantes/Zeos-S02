@@ -31,7 +31,8 @@ char char_map[] = {'\0', '\0', '1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',
 // Handler for Page Fault Error (idt[14])
 void or_page_fault_handler();
 
-// Handler for Keyboard Interrupt (idt[]
+// Handler for Keyboard Interrupt (idt[33])
+void or_keyboard_handler();
 
 /*****************************/
 /* CUSTOM INTERRUPT ROUTINES */
@@ -57,6 +58,15 @@ void or_page_fault_routine(int errno, int eip) {
 
   while (1)
     ;
+}
+
+// Routine for Keyboard Interrupt (idt[33])
+void or_keyboard_routine() {
+  unsigned char key_code = inb(0x60);
+
+  if (!(key_code & 0x80)) {
+    printc_xy(0, 0, char_map[key_code]);
+  }
 }
 
 void setInterruptHandler(int vector, void (*handler)(),
@@ -111,6 +121,9 @@ void setIdt() {
 
   /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
   setInterruptHandler(14, or_page_fault_handler, 3);
+  setInterruptHandler(33, or_keyboard_handler, 0);
+
+  // To Enable Interrupts see hardware.S
 
   set_idt_reg(&idtR);
 }

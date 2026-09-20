@@ -9,8 +9,8 @@
 
 DWord get_eflags(void);
 void set_eflags(void);
-void set_idt_reg(Register * idt);
-void set_gdt_reg(Register * gdt);
+void set_idt_reg(Register *idt);
+void set_gdt_reg(Register *gdt);
 void set_ldt_reg(Selector ldt);
 void set_task_reg(Selector tr);
 void return_gate(Word ds, Word ss, DWord esp, Word cs, DWord eip);
@@ -21,7 +21,7 @@ void return_gate(Word ds, Word ss, DWord esp, Word cs, DWord eip);
  *    registro 0x21:
  *    7 6 5 4 3 2 1 0
  *    x x x x x x x x
- *    
+ *
  *    bit 0 : Timer
  *    bit 1 : Keyboard
  *    bit 2 : PIC cascading
@@ -30,7 +30,7 @@ void return_gate(Word ds, Word ss, DWord esp, Word cs, DWord eip);
  *    bit 5 : Reserved
  *    bit 6 : Floppy disk
  *    bit 7 : Reserved
- * 
+ *
  *
  *   x = 0 -> activada
  *   x = 1 -> no activada
@@ -39,12 +39,12 @@ void return_gate(Word ds, Word ss, DWord esp, Word cs, DWord eip);
 void enable_int(void);
 void delay(void);
 
-Byte inb (unsigned short port);
+Byte inb(unsigned short port);
 
 void bochs_out(char c);
 
 /* Writes on CR3 register producing a TLB flush */
-void set_cr3(page_table_entry * dir);
+void set_cr3(page_table_entry *dir);
 
 int read_cr0();
 
@@ -52,7 +52,7 @@ void write_cr0(int value);
 
 void __sti(void);
 
-struct task_struct * current();
+struct task_struct *current();
 
 /**************************
  ** setSegmentRegisters ***
@@ -68,4 +68,4 @@ struct task_struct * current();
  */
 void set_seg_regs(Word data_sel, Word stack_sel, DWord esp);
 
-#endif  /* __HARDWARE_H__ */
+#endif /* __HARDWARE_H__ */

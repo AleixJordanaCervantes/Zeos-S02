@@ -65,6 +65,11 @@
 	popl %fs; \
 	popl %gs
 
+
+#define EOI                                                                    \
+  movb $0x20, % al;                                                            \
+  outb % al, $0x20;
+
 /*
  * Overriding page fault handler function in x86 asm
  * Safely calls or_page_fault_routine in system mode (currently this never returns)
@@ -75,7 +80,12 @@ ENTRY(or_page_fault_handler)
 	pushl 0x30(%esp)
 	call or_page_fault_routine
 	RESTORE_ALL
-	addl $4, %esp
+	addl $8, %esp
 	iret
 
-//Entry(or_keyboard_handler)
+ENTRY(or_keyboard_handler)
+  SAVE_ALL
+  EOI
+  call or_keyboard_routine
+  RESTORE_ALL
+  iret
