@@ -32,3 +32,4 @@ user
 
 # other
 .cache
+*.swp

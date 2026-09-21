@@ -17,13 +17,25 @@
 
 Byte x, y=19;
 
+void line_jump_cursor() {
+	x = 0;
+	if (y + 1 >= NUM_ROWS) {
+		Word *screen = (Word *)0xb8000;
+		for (int i = 1; i < NUM_ROWS; i++) {
+			for (int j = 0; j < NUM_COLUMNS; j++) {
+				screen[((i - 1) * NUM_COLUMNS + j)] = screen[(i * NUM_COLUMNS + j)];
+			}
+		}
+		for (int j = 0; j < NUM_COLUMNS; j++) screen[(y * NUM_COLUMNS + j)] = 0;
+	} else y++;
+}
+
 void printc(char c)
 {
   bochs_out(c);
   if (c=='\n')
   {
-    x = 0;
-    y=(y+1)%NUM_ROWS;
+		line_jump_cursor();
   }
   else
   {
@@ -32,8 +44,7 @@ void printc(char c)
 	screen[(y * NUM_COLUMNS + x)] = ch;
     if (++x >= NUM_COLUMNS)
     {
-      x = 0;
-      y=(y+1)%NUM_ROWS;
+			line_jump_cursor();
     }
   }
 }
