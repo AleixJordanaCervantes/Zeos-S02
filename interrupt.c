@@ -39,6 +39,7 @@ void or_keyboard_handler();
 /*****************************/
 
 // Routine for Page Fault Error (idt[14])
+// Prints the error code and value of %eip register (through params) and hangs the system
 void or_page_fault_routine(int errno, int eip) {
   char str[11]; // this variable allocates 11 chars to the stack.
                 // % eip (32 bit positive ) can have 10 digits in base 10 + 1
@@ -61,6 +62,7 @@ void or_page_fault_routine(int errno, int eip) {
 }
 
 // Routine for Keyboard Interrupt (idt[33])
+// Sets the character in 0, 0 position in the screen buffer to the corresponding value to the key press
 void or_keyboard_routine() {
   unsigned char key_code = inb(0x60);
 

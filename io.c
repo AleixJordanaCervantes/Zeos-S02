@@ -17,6 +17,7 @@
 
 Byte x, y=19;
 
+// Jumps a line or if the screen limit is reached it shifts the buffer and clears the final line
 void line_jump_cursor() {
 	x = 0;
 	if (y + 1 >= NUM_ROWS) {
