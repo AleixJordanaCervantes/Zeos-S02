@@ -106,10 +106,10 @@ ENTRY(sys_call_handler)
   cmp $MAX_SYSCALL, %eax
   jge err
   call *sys_call_table(, %eax, 4) /* call sys_call_table[%eax*4] (mem addresses ocupy 4B) */
-  movl %eax, 18(%esp)             /* Save %eax (ret value) for use after RESTORE_ALL */
+  movl %eax, 0x18(%esp)             /* Save %eax (ret value) for use after RESTORE_ALL */
   jmp end
 err:
-  movl $-38, 18(%esp)
+  movl $-38, 0x18(%esp)
 end:
   RESTORE_ALL
   iret

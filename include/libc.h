@@ -12,4 +12,6 @@ int strlen(char *a);
 
 int write(int fd, char *buf, int size);
 
+void perror();
+
 #endif /* __LIBC_H__ */

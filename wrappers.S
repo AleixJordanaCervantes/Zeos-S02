@@ -28,7 +28,7 @@ ENTRY(write)
   popl %ebp
   test %eax, %eax       /* Error Check and Return */
   jns else
-  subl $0, %eax
+  negl %eax
   movl %eax, errno
   movl $-1, %eax
 else:
