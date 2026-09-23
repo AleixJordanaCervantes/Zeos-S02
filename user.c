@@ -1,6 +1,6 @@
 #include <libc.h>
 
-char buff[24];
+char buff[24] = "\nHello World";
 
 int pid;
 
@@ -11,6 +11,8 @@ int __attribute__((__section__(".text.main"))) main(void) {
 
   // Uncomment the following line to cause a Page Fault Error with errno 6
   // *((int *)0x00) = 0;
+
+  write(1, buff, strlen(buff));
   while (1) {
   }
 }

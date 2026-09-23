@@ -66,8 +66,8 @@
 	popl %gs
 
 
-#define EOI                                                                    \
-  movb $0x20, % al;                                                            \
+#define EOI         \
+  movb $0x20, % al; \
   outb % al, $0x20;
 
 /*
@@ -87,5 +87,29 @@ ENTRY(or_keyboard_handler)
   SAVE_ALL
   EOI
   call or_keyboard_routine
+  RESTORE_ALL
+  iret
+
+/*
+ * Overriding sys call interruption (software int).
+ * "C Pseudo-header": int sys_call_handler(int call_id, ... call_args)
+ * C Header: void sys_call_handler()
+ * Receives Params via regs:
+ *  @call_id:   %eax, offset from sys_call_table in elements (4B mem addr)
+ *  @call_args: %edx, %ecx, %ebx, %esi, %edi, %ebp; from left to right the params of the target function. 
+ *              Automatically creates target function's parameters with SAVE_ALL macro
+ */
+ENTRY(sys_call_handler)
+  SAVE_ALL
+  cmp $0, %eax                    /* Check %eax validity: %eax [0, MAX_SYSCALL] (max 4 syscalls for now) */
+  jl err
+  cmp $MAX_SYSCALL, %eax
+  jge err
+  call *sys_call_table(, %eax, 4) /* call sys_call_table[%eax*4] (mem addresses ocupy 4B) */
+  movl %eax, 18(%esp)             /* Save %eax (ret value) for use after RESTORE_ALL */
+  jmp end
+err:
+  movl $-38, 18(%esp)
+end:
   RESTORE_ALL
   iret

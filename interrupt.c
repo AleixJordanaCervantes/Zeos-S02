@@ -34,6 +34,13 @@ void or_page_fault_handler();
 // Handler for Keyboard Interrupt (idt[33])
 void or_keyboard_handler();
 
+/*
+ * Overriding sys call interruption (software int).
+ * C Header for sys_call_handler (imlpemented in x86 asm).
+ * Occupies index 0x80 (128) of idt (idt[128]).
+ */
+void sys_call_handler();
+
 /*****************************/
 /* CUSTOM INTERRUPT ROUTINES */
 /*****************************/
@@ -120,8 +127,10 @@ void setIdt() {
   set_handlers();
 
   /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
-  setInterruptHandler(14, or_page_fault_handler, 3);
+  setInterruptHandler(14, or_page_fault_handler, 0);
   setInterruptHandler(33, or_keyboard_handler, 0);
+
+  setTrapHandler(0x80, sys_call_handler, 3);
 
   // To Enable Interrupts see hardware.S
 
