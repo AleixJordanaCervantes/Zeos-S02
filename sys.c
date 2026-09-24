@@ -26,11 +26,14 @@ int check_fd(int fd, int permissions) {
 
 int sys_ni_syscall() { return -38; /*ENOSYS*/ }
 
-/*
- * System Call Implementation for write.
- * @fd:     Target file descriptor (1 always for now (console)).
- * @buffer: char buffer containing string to be printed.
- * @size:   size of the buffer.
+/* System Call Implementation for write.
+ * Desc:    If parameters are valid the contents up to size of the buffer are
+ *          written to the target fd. Currently only fd 1 if valid and it prints
+ *          to the screen.
+ * Params:  - fd: Target file descriptor. Only fd 1 is valid and it represents
+ *                the screen device.
+ *          - buffer: Pointer to the contents to be written.
+ *          - size: Amount of characters that will be written.
  * Returns: 0 on success, error code otherwise.
  * Note:    Might be good practise copying first the buffer using
  *          copy_from_user, however it would also be expensive on stack memory

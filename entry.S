@@ -70,9 +70,11 @@
   movb $0x20, % al; \
   outb % al, $0x20;
 
-/*
- * Overriding page fault handler function in x86 asm
- * Safely calls or_page_fault_routine in system mode (currently this never returns)
+/* Overriding page fault handler function in x86 asm.
+ * C Header:  void or_page_handler();
+ * Desc:      Safely calls or_page_fault_routine in system mode.
+ * Params:    No standard C parameters. However it does receive via hardware an error code.
+ * Return:    It doesn't. Hangs the system.
  */
 ENTRY(or_page_fault_handler)
 	SAVE_ALL
@@ -83,6 +85,10 @@ ENTRY(or_page_fault_handler)
 	addl $8, %esp
 	iret
 
+/* Overriding keyboard interrupt handler in x86.
+ * C Header:  void or_keyboard_handler();
+ * Desc:      Safely calls or_keyboard_routine in system mode.
+ */
 ENTRY(or_keyboard_handler)
   SAVE_ALL
   EOI
@@ -90,14 +96,14 @@ ENTRY(or_keyboard_handler)
   RESTORE_ALL
   iret
 
-/*
- * Overriding sys call interruption (software int).
- * "C Pseudo-header": int sys_call_handler(int call_id, ... call_args)
- * C Header: void sys_call_handler()
- * Receives Params via regs:
- *  @call_id:   %eax, offset from sys_call_table in elements (4B mem addr)
- *  @call_args: %edx, %ecx, %ebx, %esi, %edi, %ebp; from left to right the params of the target function. 
- *              Automatically creates target function's parameters with SAVE_ALL macro
+/* Overriding sys call interruption (software int).
+ * C Header:  void sys_call_handler();
+ * Desc:      Calls a target function with system privileges. Said function needs to be assigned an id via the sys_call_table (see sys_call_table.S).
+ * Params:    Does not recieve standard C parameters. Instead via CPU registers it receives:
+ *              - function_id: Found in %eax, contains the position in the sys_call_table array where the target function is found.
+ *              - function_args: Found in %edx, %ecx, %ebx, %esi, %edi, %ebp; from left to right the parameters of the target function.
+ *                               Automatically creates target function's parameters with SAVE_ALL macro.
+ * Return:    Returns the return value of the target system call or ENOSYS if system call identified by function_id does not exist.
  */
 ENTRY(sys_call_handler)
   SAVE_ALL
@@ -114,12 +120,14 @@ end:
   RESTORE_ALL
   iret
 
-/* Handler for fast system calls.
- * "C Pseudo-header": int sys_call_handler(int call_id, ... call_args)
- * Receives Params via regs:
- *  @call_id:   %eax, offset from sys_call_table in elements (4B mem addr)
- *  @call_args: %edx, %ecx, %ebx, %esi, %edi, %ebp; from left to right the params of the target function. 
- *              Automatically creates target function's parameters with SAVE_ALL macro
+/* Handler for fast system calls. Differs from sys_call_handler in that MSRs are used to locate it instead of the IDT.
+ * C Header:  void fast_sys_call_handler();
+ * Desc:      Calls a target function with system privileges. Said function needs to be assigned an id via the sys_call_table (see sys_call_table.S).
+ * Params:    Does not recieve standard C parameters. Instead via CPU registers it receives:
+ *              - function_id: Found in %eax, contains the position in the sys_call_table array where the target function is found.
+ *              - function_args: Found in %edx, %ecx, %ebx, %esi, %edi, %ebp; from left to right the parameters of the target function.
+ *                               Automatically creates target function's parameters with SAVE_ALL macro.
+ * Return:    Returns the return value of the target system call or ENOSYS if system call identified by function_id does not exist.
  */
 ENTRY(fast_sys_call_handler)
   pushl $__USER_DS                /* Save basic user context */

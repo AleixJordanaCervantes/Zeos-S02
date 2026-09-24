@@ -8,9 +8,9 @@
 #include <types.h>
 
 /* Writes to the MSRs.
- * C Header: void writeMSR(unsigned int address, unsigned long value)
- * @address:  Address value of the target MSR.
- * @value     Value to be written to the MSR.
+ * Desc:      Writes value to the target MSR.
+ * Params:    - address: Contains the target MSR address.
+ *            - value: Contains the value to be written to said target MSR.
  */
 void writeMSR(unsigned int address, unsigned long value);
 

@@ -55,7 +55,9 @@ char *error_msg[39] = {
     "No locks available",               // ENOLCK
     "Function not implemented"};        // ENOSYS
 
-/* Attempts to write via fd 1 the error msg corresponding to the current errno
+/* Prints error message for current errno.
+ * Desc:  Prints to fd 1 (standard output) the error messaqe corresponding to
+ *        the current value of errno (see error_msg).
  */
 void perror() {
   if (errno < 38 && errno >= 0) {

@@ -28,20 +28,54 @@ char char_map[] = {'\0', '\0', '1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',
 /* CUSTOM INTERRUPT HANDLERS */
 /*****************************/
 
-// Handler for Page Fault Error (idt[14])
+/* Overriding page fault handler function.
+ * Desc:        Safely calls or_page_fault_routine in system mode.
+ *              Gets invoked during when an Page Fault Exception occurs via the
+ *              IDT. Occupies the 14th position in the IDT.
+ * Implemented: see entry.S.
+ */
 void or_page_fault_handler();
 
-// Handler for Keyboard Interrupt (idt[33])
+/* Overriding keyboard handler function.
+ * Desc:        Safely calls or_keyboard_handler in system mode.
+ *              Gets asyncronously invoked during when the PIC raises the
+ *              keyboard interrupt. Occupies the 33th position in the IDT.
+ * Implemented: see entry.S.
+ */
 void or_keyboard_handler();
 
-/*
- * Overriding sys call interruption (software int).
- * C Header for sys_call_handler (imlpemented in x86 asm).
- * Occupies index 0x80 (128) of idt (idt[128]).
+/* Overriding system call handler handler function.
+ * Desc:        Safely calls a system function in system mode.
+ *              Gets invoked via trap from user code in order to execute certain
+ *              functions with elavated system privilages.
+ *              Occupies the 128th (0x80) position in the IDT.
+ * Params:      No standard C parameters. However a certain CPU state is
+ *              required.
+ *              - function_id: the position of the target function within the
+ *                             sys_call_table (see sys_call_table.S).
+ *              - function_args: the arguments of the target function. See
+ *                               entry.S.
+ * Return:      Returns the return value of the target function or ENOSYS if
+ *              said function does not exist.
+ * Implemented: see entry.S.
  */
 void sys_call_handler();
 
-/* Fast system call handler (MSR use instead of interruption)
+/* Overriding system call handler handler function.
+ * Desc:        Safely calls a system function in system mode.
+ *              Gets invoked via sysenter from user code in order to execute
+ *              certain functions with elavated system privilages.
+ *              Since it doesn't use the IDT it is not initialized there,
+ *              instead MSRs are used to indicate this function's address.
+ * Params:      No standard C parameters. However a certain CPU state is
+ *              required which indicates the following parameters:
+ *              - function_id: the position of the target function within the
+ *                             sys_call_table (see sys_call_table.S).
+ *              - function_args: the arguments of the target function. See
+ *                               entry.S.
+ * Return:      Returns the return value of the target function or ENOSYS if
+ *              said function does not exist.
+ * Implemented: see entry.S.
  */
 void fast_sys_call_handler();
 
@@ -49,8 +83,18 @@ void fast_sys_call_handler();
 /* CUSTOM INTERRUPT ROUTINES */
 /*****************************/
 
-// Routine for Page Fault Error (idt[14])
-// Prints the error code and value of %eip register (through params) and hangs the system
+/* Routine for Page Fault Exception.
+ * Desc:    Prints to the screen "Page Fault Error (@errno) at %eip = @eip".
+ *          This function should only be invoked by or_page_fault_handler.
+ * Params:  - errno: The hardware error number, which describes better the type
+ *                   of error encountered.
+ *          - eip: The value of the %eip register at exception time and
+ *                 consequently the memory address of the assembly line that
+ *                 caused the error.
+ * Return:  Currently doesn't return, instead opting to hang the system (will be
+ *          changed).
+ * Note:    Could be changed to use more robust printing systems.
+ */
 void or_page_fault_routine(int errno, int eip) {
   char str[11]; // this variable allocates 11 chars to the stack.
                 // % eip (32 bit positive ) can have 10 digits in base 10 + 1
@@ -68,12 +112,16 @@ void or_page_fault_routine(int errno, int eip) {
 
   printk(")\n");
 
+  // Hang the system
   while (1)
     ;
 }
 
-// Routine for Keyboard Interrupt (idt[33])
-// Sets the character in 0, 0 position in the screen buffer to the corresponding value to the key press
+/* Routine for Keyboard Interruption.
+ * Desc:  Sets the character in the (0, 0) position in the screen buffer to
+ *        the character corresponding to the value of the key press (see
+ *        char_map).
+ */
 void or_keyboard_routine() {
   unsigned char key_code = inb(0x60);
 

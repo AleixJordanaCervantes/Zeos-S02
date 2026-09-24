@@ -1,6 +1,8 @@
 #include <asm.h>
 #include <segment.h>
 
+/* Table containing the system calls ordered by id.
+ */
 ENTRY (sys_call_table)
 	.long sys_ni_syscall  // 0
 	.long sys_ni_syscall  // 1
