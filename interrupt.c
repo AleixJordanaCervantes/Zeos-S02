@@ -34,6 +34,17 @@ void or_page_fault_handler();
 // Handler for Keyboard Interrupt (idt[33])
 void or_keyboard_handler();
 
+/*
+ * Overriding sys call interruption (software int).
+ * C Header for sys_call_handler (imlpemented in x86 asm).
+ * Occupies index 0x80 (128) of idt (idt[128]).
+ */
+void sys_call_handler();
+
+/* Fast system call handler (MSR use instead of interruption)
+ */
+void fast_sys_call_handler();
+
 /*****************************/
 /* CUSTOM INTERRUPT ROUTINES */
 /*****************************/
@@ -45,7 +56,7 @@ void or_page_fault_routine(int errno, int eip) {
                 // % eip (32 bit positive ) can have 10 digits in base 10 + 1
                 // for \0.
 
-  printk(")\nPage Fault Error (");
+  printk("\nPage Fault Error (");
 
   itoa(errno, str);
   printk(str);
@@ -122,10 +133,17 @@ void setIdt() {
   set_handlers();
 
   /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
-  setInterruptHandler(14, or_page_fault_handler, 3);
+  setInterruptHandler(14, or_page_fault_handler, 0);
   setInterruptHandler(33, or_keyboard_handler, 0);
+
+  setTrapHandler(0x80, sys_call_handler, 3);
 
   // To Enable Interrupts see hardware.S
 
   set_idt_reg(&idtR);
+
+  // Enable Fast System Calls
+  writeMSR(0x174, (unsigned long)__KERNEL_CS);
+  writeMSR(0x175, INITIAL_ESP);
+  writeMSR(0x176, (unsigned long)fast_sys_call_handler);
 }

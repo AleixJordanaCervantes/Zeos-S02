@@ -7,6 +7,13 @@
 
 #include <types.h>
 
+/* Writes to the MSRs.
+ * C Header: void writeMSR(unsigned int address, unsigned long value)
+ * @address:  Address value of the target MSR.
+ * @value     Value to be written to the MSR.
+ */
+void writeMSR(unsigned int address, unsigned long value);
+
 DWord get_eflags(void);
 void set_eflags(void);
 void set_idt_reg(Register *idt);

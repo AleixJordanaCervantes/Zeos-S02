@@ -1,5 +1,21 @@
 #include <asm.h>
 
+/* Writes to the MSRs. 
+ * C Header: void writeMSR(unsigned int address, unsigned long value)
+ * @address:  Address value of the target MSR. To be put into %ecx
+ * @value     Value to be written to the MSR combined into one parameter. To be put into %edx:%eax.
+ * Note:  Not using a full proper stack frame: instead %esp points to @RET and we can extrapolate that:
+ *        address = 4(%esp) -> %ecx
+ *        long[31..0] = 8(%esp) -> %eax (Intel uses little endian)
+ *        long[63..32] = 12(%esp) -> %ecx
+ */
+ENTRY(writeMSR)
+  movl 4(%esp), %ecx
+  movl 8(%esp), %eax
+  movl 12(%esp), %edx
+  wrmsr
+  ret
+
 // Returns EFLAGS
 ENTRY(get_eflags)
     pushf
