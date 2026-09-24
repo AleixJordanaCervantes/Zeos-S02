@@ -10,8 +10,14 @@ void itoa(int a, char *b);
 
 int strlen(char *a);
 
+void perror();
+
+/********************/
+/* SYSCALL WRAPPERS */
+/********************/
+
 int write(int fd, char *buf, int size);
 
-void perror();
+int fast_write(int fd, char *buf, int size);
 
 #endif /* __LIBC_H__ */

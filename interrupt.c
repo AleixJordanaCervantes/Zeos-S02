@@ -41,6 +41,10 @@ void or_keyboard_handler();
  */
 void sys_call_handler();
 
+/* Fast system call handler (MSR use instead of interruption)
+ */
+void fast_sys_call_handler();
+
 /*****************************/
 /* CUSTOM INTERRUPT ROUTINES */
 /*****************************/
@@ -51,7 +55,7 @@ void or_page_fault_routine(int errno, int eip) {
                 // % eip (32 bit positive ) can have 10 digits in base 10 + 1
                 // for \0.
 
-  printk(")\nPage Fault Error (");
+  printk("\nPage Fault Error (");
 
   itoa(errno, str);
   printk(str);
@@ -135,4 +139,9 @@ void setIdt() {
   // To Enable Interrupts see hardware.S
 
   set_idt_reg(&idtR);
+
+  // Enable Fast System Calls
+  writeMSR(0x174, (unsigned long)__KERNEL_CS);
+  writeMSR(0x175, INITIAL_ESP);
+  writeMSR(0x176, (unsigned long)fast_sys_call_handler);
 }

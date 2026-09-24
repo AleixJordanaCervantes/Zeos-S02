@@ -43,7 +43,7 @@ int sys_write(int fd, char *buffer, int size) {
     return ret;
   if (buffer == NULL)
     return -14; /* EFAULT */
-  if (size <= 0)
+  if (size < 0)
     return -27; /* EFBIG (Since real linux write uses unsigned) */
 
   char ker_buff[size];

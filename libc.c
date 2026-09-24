@@ -55,12 +55,6 @@ char *error_msg[39] = {
     "No locks available",               // ENOLCK
     "Function not implemented"};        // ENOSYS
 
-/********************/
-/* SYSCALL WRAPPERS */
-/********************/
-
-int write(int fd, char *buffer, int size);
-
 /* Attempts to write via fd 1 the error msg corresponding to the current errno
  */
 void perror() {

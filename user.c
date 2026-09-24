@@ -12,10 +12,8 @@ int __attribute__((__section__(".text.main"))) main(void) {
   // Uncomment the following line to cause a Page Fault Error with errno 6
   // *((int *)0x00) = 0;
 
-  char *buf = 0x0;
-
-  write(1, buf, strlen(buff));
-  perror();
+  if (fast_write(1, buff, strlen(buff)) < 0)
+    perror();
   while (1) {
   }
 }
